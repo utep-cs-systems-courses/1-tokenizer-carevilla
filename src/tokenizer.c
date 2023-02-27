@@ -65,3 +65,60 @@ char *copy_str(char *inStr , short len) {
   return p;
 
 }
+
+int len_str(char *s) {
+  int n=0;
+  char *p =  s;
+  
+  if ( s == (char *) NULL ) return n;
+  while (*p != '\0') {
+    ++n;
+    ++p;
+  }
+  return n;
+}
+
+char **tokenize(char *s){
+  int i;
+  int numOfStrings = count_words(s);
+  char *p;
+  char **tokens;
+
+  //printf("string %s has %d words\n", s, numOfStrings);
+  
+  if(numOfStrings == 0 ) return NULL;
+  
+  tokens = malloc ((numOfStrings + 1) * sizeof(char **));
+  if ( tokens == (char **) NULL ) {
+    printf("failed to allocate memory\n");
+    exit(-1);
+  }
+  p = copy_str(s,len_str(s));
+  
+  for (i= 0; i<numOfStrings; i++){
+    tokens[i] = word_start(p);
+    //printf("tokens[%d] of %d: %s\t", i, numOfStrings, tokens[i]);
+    p = word_terminator(tokens[i]);
+    *p = '\0';
+    //printf("tokens[%d] of %d: %s\t", i, numOfStrings, tokens[i]);
+    ++p;
+    //printf("p: %s\n",p);
+  }
+  tokens[i] = (char *) NULL; 
+  return tokens;
+}
+
+void print_tokens(char **s){
+  char **t;
+  t = s;
+  while ( t != NULL ) {
+    printf("%s\n",*t);
+    ++t;
+  }
+  return;
+}
+
+void free_tokens(char **s){
+  free(s);
+  return;
+}

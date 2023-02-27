@@ -59,7 +59,7 @@ static char *test_copy_str() {
     mu_assert("copy_str('happy days',5) == 'happy'", (copy_str("happy days",5) == "happy")==0);
     return 0;
 }
-/*
+
 static char *test_tokenize() {
     char *str = "happy happy joy joy";
     char **tokens = tokenize(str);
@@ -70,7 +70,7 @@ static char *test_tokenize() {
     free_tokens(tokens);
     return 0;
 }
-*/
+
 /* History test cases */
 static char *test_add_history() {
     List* list = init_history();
@@ -97,6 +97,7 @@ static char *all_tests() {
         mu_run_test(test_word_terminator);
         mu_run_test(test_count_words);
         mu_run_test(test_copy_str);
+	mu_run_test(test_tokenize);
     }
 
     if (TEST_HISTORY) {
