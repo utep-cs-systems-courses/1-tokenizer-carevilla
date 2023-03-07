@@ -10,7 +10,7 @@
 */
 
 #define TEST_TOKENIZER 1
-#define TEST_HISTORY 0
+#define TEST_HISTORY 1
 
 /* MinUnit: http://www.jera.com/techinfo/jtns/jtn002.html */
  #define mu_assert(message, test) do { if (!(test)) return message; } while (0)
@@ -71,13 +71,20 @@ static char *test_tokenize() {
     return 0;
 }
 
-/* History test cases */
+static char *test_init_history() {
+  List *list = init_history();
+  mu_assert("init_history()", list );
+  return 0;
+}
+
 static char *test_add_history() {
     List* list = init_history();
     add_history(list, "happy");
     mu_assert("add_history(list, 'happy')", strcmp(list->root->str, "happy") == 0);
     add_history(list, "joy");
     mu_assert("add_history(list, 'joy')", strcmp(list->root->next->str, "joy") == 0);
+    add_history(list, "chris");
+    mu_assert("add_history(list, 'chris')",strcmp(list->root->next->next->str,"chris")==0);
     return 0;
 }
 
@@ -85,9 +92,24 @@ static char *test_get_history() {
     List* list = init_history();
     add_history(list, "happy");
     mu_assert("get_history(list, 1)", strcmp(get_history(list, 1), "happy") == 0);
+    mu_assert("get_history(list, 2)", get_history(list, 2) ==  NULL);
     return 0;
 }
 
+static char *test_free_history() {
+  List* list = init_history();
+  free_history(list);
+  mu_assert("free_history(<empty>)", list->root == NULL);
+  add_history(list , "hello" );
+  free_history(list);
+  mu_assert("free_history(list1)",list->root == NULL);
+  add_history(list, "hello");
+  add_history(list, "world!");
+  //print_history(list);
+  free_history(list);
+  mu_assert("free_history(list2)", list->root==NULL);
+  return 0;
+}
 
 static char *all_tests() {
     if (TEST_TOKENIZER) {
@@ -101,8 +123,10 @@ static char *all_tests() {
     }
 
     if (TEST_HISTORY) {
-        mu_run_test(test_add_history);
-        mu_run_test(test_get_history);
+      mu_run_test(test_init_history);
+      mu_run_test(test_add_history);
+      mu_run_test(test_get_history);
+      mu_run_test(test_free_history);
     }
 
     return 0;

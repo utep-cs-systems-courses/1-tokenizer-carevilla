@@ -46,10 +46,8 @@ int count_words(char *s) {
 
   p = s;
   while ( w = word_start(p) ) {
-    //printf("1 s: %s w: %s n: %d\n", p, w, n);
     p = word_terminator(w);
     ++n;
-    //printf("2 s: %s w: %s n: %d\n", p, w, n);
   }
   return n;
 }
@@ -57,17 +55,18 @@ int count_words(char *s) {
 // copies at most len characters from one string to another...
 // assumes inStr is at least length len...
 char *copy_str(char *inStr , short len) {
+  // allocates memory for the string
   char *p = malloc ((len+1) * sizeof(char));
   int i;
   for ( i=0; i<len; ++i) p[i] = inStr[i];
-  p[len] = '\0';
-  //printf("inStr: %s p: %s equal=%d\n",inStr,p,inStr==p);
+  p[len] = '\0';  
   return p;
 
 }
 
+/* helper function to determine the length of a string */
 int len_str(char *s) {
-  int n=0;
+  int n=1;
   char *p =  s;
   
   if ( s == (char *) NULL ) return n;
@@ -79,31 +78,27 @@ int len_str(char *s) {
 }
 
 char **tokenize(char *s){
-  int i;
+  int i, n;
   int numOfStrings = count_words(s);
-  char *p;
+  char *p, *t;
   char **tokens;
-
-  //printf("string %s has %d words\n", s, numOfStrings);
-  
+ 
   if(numOfStrings == 0 ) return NULL;
   
   tokens = malloc ((numOfStrings + 1) * sizeof(char **));
-  if ( tokens == (char **) NULL ) {
-    printf("failed to allocate memory\n");
-    exit(-1);
-  }
-  p = copy_str(s,len_str(s));
   
+  // check pointer is not null or else core dumped
+  if ( tokens == (char **) NULL )  exit(-1);
+  
+  p = s; t = s;
   for (i= 0; i<numOfStrings; i++){
-    tokens[i] = word_start(p);
-    //printf("tokens[%d] of %d: %s\t", i, numOfStrings, tokens[i]);
-    p = word_terminator(tokens[i]);
-    *p = '\0';
-    //printf("tokens[%d] of %d: %s\t", i, numOfStrings, tokens[i]);
-    ++p;
-    //printf("p: %s\n",p);
+    p = word_start(t);
+    t = word_terminator(p);
+    tokens[i] = copy_str(p,t-p);
+    t++;
   }
+  
+  // add null pointer to the end and return
   tokens[i] = (char *) NULL; 
   return tokens;
 }
@@ -119,6 +114,11 @@ void print_tokens(char **s){
 }
 
 void free_tokens(char **s){
+  char **t = s;
+  while ( *t != NULL ) {
+    free(*t);
+    t++;
+  }
   free(s);
   return;
 }
